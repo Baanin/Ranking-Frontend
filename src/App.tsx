@@ -10,6 +10,7 @@ import PlayersPage from './pages/PlayersPage';
 import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminAuditLogsPage from './pages/admin/AdminAuditLogsPage';
 import { PERMISSIONS } from './types/auth';
 
 function App() {
@@ -31,6 +32,11 @@ function App() {
               element={<ProtectedRoute permissions={[PERMISSIONS.MANAGE_USERS]} />}
             >
               <Route path="users" element={<AdminUsersPage />} />
+            </Route>
+            <Route
+              element={<ProtectedRoute permissions={[PERMISSIONS.VIEW_AUDIT_LOGS]} />}
+            >
+              <Route path="audit" element={<AdminAuditLogsPage />} />
             </Route>
           </Route>
         </Route>

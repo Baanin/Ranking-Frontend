@@ -43,6 +43,8 @@ interface RequestOptions extends Omit<RequestInit, 'body' | 'headers'> {
   headers?: Record<string, string>;
   /** Set true to skip auth header (e.g. login, refresh). */
   skipAuth?: boolean;
+  /** When true, return the raw JSON envelope instead of unwrapping `.data`. */
+  raw?: boolean;
   /** Internal: prevents infinite refresh loops. */
   _retry?: boolean;
 }
@@ -72,7 +74,7 @@ export async function apiFetch<T = unknown>(
   path: string,
   options: RequestOptions = {},
 ): Promise<T> {
-  const { body, headers = {}, skipAuth, _retry, ...rest } = options;
+  const { body, headers = {}, skipAuth, raw, _retry, ...rest } = options;
 
   const finalHeaders: Record<string, string> = { ...headers };
   if (body !== undefined && !('Content-Type' in finalHeaders)) {
@@ -112,11 +114,11 @@ export async function apiFetch<T = unknown>(
       (json && typeof json === 'object' && 'error' in json && typeof (json as { error: unknown }).error === 'string'
         ? (json as { error: string }).error
         : undefined) ?? `Request failed with status ${res.status}`;
-    throw new ApiError(res.status, message, json);
+    throw new ApiError(res.status, message, raw ? json : json);
   }
 
-  // Unwrap { data: ... } envelope
-  if (json && typeof json === 'object' && 'data' in json) {
+  // Unwrap { data: ... } envelope unless raw was requested
+  if (!raw && json && typeof json === 'object' && 'data' in json) {
     return (json as { data: T }).data;
   }
   return json as T;

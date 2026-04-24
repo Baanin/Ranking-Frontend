@@ -4,6 +4,7 @@ export const PERMISSIONS = {
   MANAGE_RESULTS: 'MANAGE_RESULTS',
   MANAGE_USERS: 'MANAGE_USERS',
   VIEW_ADMIN_PANEL: 'VIEW_ADMIN_PANEL',
+  VIEW_AUDIT_LOGS: 'VIEW_AUDIT_LOGS',
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

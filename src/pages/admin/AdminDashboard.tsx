@@ -1,4 +1,4 @@
-import { Users, Trophy, Swords } from 'lucide-react';
+import { Users, Trophy, Swords, ScrollText } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { PERMISSIONS } from '@/types/auth';
 
@@ -12,6 +12,13 @@ export default function AdminDashboard() {
       description: 'Gérer les comptes admin et leurs permissions',
       href: '/admin/users',
       visible: hasPermission(PERMISSIONS.MANAGE_USERS),
+    },
+    {
+      label: "Journal d'audit",
+      icon: ScrollText,
+      description: 'Historique des actions administratives',
+      href: '/admin/audit',
+      visible: hasPermission(PERMISSIONS.VIEW_AUDIT_LOGS),
     },
     {
       label: 'Tournois',

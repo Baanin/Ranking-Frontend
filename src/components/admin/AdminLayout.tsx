@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, Shield } from 'lucide-react';
+import { LayoutDashboard, Users, Shield, ScrollText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { PERMISSIONS, type Permission } from '@/types/auth';
@@ -15,6 +15,7 @@ interface NavItem {
 const items: NavItem[] = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/users', label: 'Administrateurs', icon: Users, requires: PERMISSIONS.MANAGE_USERS },
+  { to: '/admin/audit', label: "Journal d'audit", icon: ScrollText, requires: PERMISSIONS.VIEW_AUDIT_LOGS },
 ];
 
 export default function AdminLayout() {
