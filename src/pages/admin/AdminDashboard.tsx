@@ -1,4 +1,4 @@
-import { Users, Trophy, Swords, ScrollText } from 'lucide-react';
+import { Users, Trophy, Swords, ScrollText, Gamepad2, CalendarDays } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { PERMISSIONS } from '@/types/auth';
 
@@ -23,10 +23,23 @@ export default function AdminDashboard() {
     {
       label: 'Tournois',
       icon: Trophy,
-      description: 'À venir — création et édition des tournois',
-      href: '#',
+      description: 'Importer depuis start.gg et re-synchroniser',
+      href: '/admin/tournaments',
       visible: hasPermission(PERMISSIONS.MANAGE_TOURNAMENTS),
-      disabled: true,
+    },
+    {
+      label: 'Jeux',
+      icon: Gamepad2,
+      description: 'Catalogue des jeux (mapping start.gg)',
+      href: '/admin/games',
+      visible: hasPermission(PERMISSIONS.MANAGE_TOURNAMENTS),
+    },
+    {
+      label: 'Saisons',
+      icon: CalendarDays,
+      description: 'Périodes de ranking par jeu',
+      href: '/admin/seasons',
+      visible: hasPermission(PERMISSIONS.MANAGE_TOURNAMENTS),
     },
     {
       label: 'Joueurs',

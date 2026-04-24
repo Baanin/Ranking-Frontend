@@ -1,18 +1,40 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Trophy, TrendingUp, Flame, Swords, ArrowRight } from 'lucide-react';
-import { players, tournaments, rankings } from '@/data/mockData';
 import TournamentCard from '@/components/TournamentCard';
 import PlayerAvatar from '@/components/PlayerAvatar';
+import { listTournaments } from '@/services/tournamentsService';
+import { listRankings } from '@/services/rankingsService';
+import { listGames } from '@/services/gamesService';
+import type { Tournament, RankingEntry } from '@/types/domain';
 
 export default function HomePage() {
-  const featuredTournaments = tournaments
-    .filter((t) => t.status !== 'completed')
-    .slice(0, 3);
+  const [featuredTournaments, setFeaturedTournaments] = useState<Tournament[]>([]);
+  const [recentTournaments, setRecentTournaments] = useState<Tournament[]>([]);
+  const [top3, setTop3] = useState<RankingEntry[]>([]);
+  const [stats, setStats] = useState({ tournaments: 0, active: 0, games: 0 });
 
-  const top3 = rankings.slice(0, 3).map((r) => ({
-    ...r,
-    player: players.find((p) => p.id === r.playerId)!,
-  }));
+  useEffect(() => {
+    Promise.all([
+      listTournaments(),
+      listRankings(),
+      listGames(),
+    ])
+      .then(([all, ranks, games]) => {
+        const upcoming = all.filter((t) => t.status !== 'completed').slice(0, 3);
+        const recent = all.filter((t) => t.status === 'completed').slice(0, 3);
+        setFeaturedTournaments(upcoming.length > 0 ? upcoming : recent);
+        setRecentTournaments(recent);
+        setTop3(ranks.data.slice(0, 3));
+        setStats({
+          tournaments: all.length,
+          active: all.filter((t) => t.status !== 'completed').length,
+          games: games.filter((g) => g.isActive).length,
+        });
+      })
+      .catch(() => undefined);
+  }, []);
+  void recentTournaments; // silence unused warning if design changes
 
   return (
     <div>
@@ -68,14 +90,10 @@ export default function HomePage() {
       <section className="border-b border-slate-800 bg-slate-900/30">
         <div className="mx-auto max-w-7xl px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { icon: Swords, label: 'Joueurs inscrits', value: players.length },
-            { icon: Trophy, label: 'Tournois', value: tournaments.length },
-            {
-              icon: Flame,
-              label: 'Tournois actifs',
-              value: tournaments.filter((t) => t.status !== 'completed').length,
-            },
-            { icon: TrendingUp, label: 'Jeux', value: 6 },
+            { icon: Swords, label: 'Joueurs classés', value: top3.length ? '+' : 0 },
+            { icon: Trophy, label: 'Tournois', value: stats.tournaments },
+            { icon: Flame, label: 'Tournois actifs', value: stats.active },
+            { icon: TrendingUp, label: 'Jeux', value: stats.games },
           ].map((s) => (
             <div key={s.label} className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-red-950/40 border border-red-900/40">
@@ -108,42 +126,46 @@ export default function HomePage() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          {top3.map((entry, idx) => (
-            <div
-              key={entry.playerId}
-              className={`relative overflow-hidden rounded-xl border bg-slate-900/50 p-6 ${
-                idx === 0
-                  ? 'border-yellow-500/50 shadow-lg shadow-yellow-500/10'
-                  : idx === 1
-                    ? 'border-slate-400/40'
-                    : 'border-orange-700/40'
-              }`}
-            >
+          {top3.length === 0 ? (
+            <p className="md:col-span-3 text-slate-500">Aucun classement pour l'instant — importez un tournoi.</p>
+          ) : (
+            top3.map((entry, idx) => (
               <div
-                className={`absolute -top-4 -right-4 text-8xl font-black opacity-10 ${
-                  idx === 0 ? 'text-yellow-500' : idx === 1 ? 'text-slate-300' : 'text-orange-600'
+                key={entry.playerId}
+                className={`relative overflow-hidden rounded-xl border bg-slate-900/50 p-6 ${
+                  idx === 0
+                    ? 'border-yellow-500/50 shadow-lg shadow-yellow-500/10'
+                    : idx === 1
+                      ? 'border-slate-400/40'
+                      : 'border-orange-700/40'
                 }`}
               >
-                #{entry.rank}
-              </div>
-              <div className="relative flex items-center gap-4 mb-4">
-                <PlayerAvatar player={entry.player} size="lg" />
-                <div>
-                  <div className="text-xs uppercase tracking-wider text-slate-400">
-                    {entry.player.mainGame}
+                <div
+                  className={`absolute -top-4 -right-4 text-8xl font-black opacity-10 ${
+                    idx === 0 ? 'text-yellow-500' : idx === 1 ? 'text-slate-300' : 'text-orange-600'
+                  }`}
+                >
+                  #{entry.rank}
+                </div>
+                <div className="relative flex items-center gap-4 mb-4">
+                  <PlayerAvatar player={entry} size="lg" />
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-slate-400">
+                      {entry.country}
+                    </div>
+                    <div className="text-xl font-bold text-white">{entry.tag}</div>
+                    {entry.name && <div className="text-sm text-slate-400">{entry.name}</div>}
                   </div>
-                  <div className="text-xl font-bold text-white">{entry.player.tag}</div>
-                  <div className="text-sm text-slate-400">{entry.player.character}</div>
+                </div>
+                <div className="relative flex items-baseline gap-2">
+                  <span className="text-3xl font-black text-red-400">
+                    {entry.points.toLocaleString('fr-FR')}
+                  </span>
+                  <span className="text-xs uppercase tracking-wider text-slate-500">points</span>
                 </div>
               </div>
-              <div className="relative flex items-baseline gap-2">
-                <span className="text-3xl font-black text-red-400">
-                  {entry.points.toLocaleString('fr-FR')}
-                </span>
-                <span className="text-xs uppercase tracking-wider text-slate-500">points</span>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </section>
 

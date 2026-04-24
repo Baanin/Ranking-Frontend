@@ -1,8 +1,7 @@
-import type { Player } from '@/types';
 import { cn } from '@/lib/utils';
 
 type Props = {
-  player: Player;
+  player: { tag: string; avatarColor: string };
   size?: 'sm' | 'md' | 'lg';
 };
 

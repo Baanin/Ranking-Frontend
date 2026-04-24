@@ -11,6 +11,9 @@ import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminAuditLogsPage from './pages/admin/AdminAuditLogsPage';
+import AdminTournamentsPage from './pages/admin/AdminTournamentsPage';
+import AdminGamesPage from './pages/admin/AdminGamesPage';
+import AdminSeasonsPage from './pages/admin/AdminSeasonsPage';
 import { PERMISSIONS } from './types/auth';
 
 function App() {
@@ -37,6 +40,13 @@ function App() {
               element={<ProtectedRoute permissions={[PERMISSIONS.VIEW_AUDIT_LOGS]} />}
             >
               <Route path="audit" element={<AdminAuditLogsPage />} />
+            </Route>
+            <Route
+              element={<ProtectedRoute permissions={[PERMISSIONS.MANAGE_TOURNAMENTS]} />}
+            >
+              <Route path="tournaments" element={<AdminTournamentsPage />} />
+              <Route path="games" element={<AdminGamesPage />} />
+              <Route path="seasons" element={<AdminSeasonsPage />} />
             </Route>
           </Route>
         </Route>
