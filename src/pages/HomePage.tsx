@@ -58,10 +58,10 @@ export default function HomePage() {
               </span>
             </div>
             <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight text-white leading-none mb-6">
-              Le classement officiel du
+              Le classement officiel de l'association
               <br />
               <span className="bg-gradient-to-r from-red-500 to-orange-400 bg-clip-text text-transparent">
-                Versus Fighting
+                GamersGarden
               </span>
             </h1>
             <p className="text-lg text-slate-300 mb-8 max-w-2xl">
