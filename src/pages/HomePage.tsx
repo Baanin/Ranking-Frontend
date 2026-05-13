@@ -12,7 +12,7 @@ export default function HomePage() {
   const [featuredTournaments, setFeaturedTournaments] = useState<Tournament[]>([]);
   const [recentTournaments, setRecentTournaments] = useState<Tournament[]>([]);
   const [top3, setTop3] = useState<RankingEntry[]>([]);
-  const [stats, setStats] = useState({ tournaments: 0, active: 0, games: 0 });
+  const [stats, setStats] = useState({ tournaments: 0, active: 0, games: 0, players: 0 });
 
   useEffect(() => {
     Promise.all([
@@ -30,6 +30,7 @@ export default function HomePage() {
           tournaments: all.length,
           active: all.filter((t) => t.status !== 'completed').length,
           games: games.filter((g) => g.isActive).length,
+          players: ranks.meta.total,
         });
       })
       .catch(() => undefined);
@@ -90,7 +91,7 @@ export default function HomePage() {
       <section className="border-b border-slate-800 bg-slate-900/30">
         <div className="mx-auto max-w-7xl px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { icon: Swords, label: 'Joueurs classés', value: top3.length ? '+' : 0 },
+            { icon: Swords, label: 'Joueurs classés', value: stats.players },
             { icon: Trophy, label: 'Tournois', value: stats.tournaments },
             { icon: Flame, label: 'Tournois actifs', value: stats.active },
             { icon: TrendingUp, label: 'Jeux', value: stats.games },
