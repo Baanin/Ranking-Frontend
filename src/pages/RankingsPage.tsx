@@ -111,15 +111,15 @@ export default function RankingsPage() {
       )}
 
       <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/50">
-        <table className="w-full min-w-[480px]">
+        <table className="w-full">
           <thead className="bg-slate-900 border-b border-slate-800">
             <tr className="text-left text-xs uppercase tracking-wider text-slate-400">
-              <th className="px-6 py-4 w-16">Rang</th>
-              <th className="px-6 py-4">Joueur</th>
-              <th className="px-6 py-4 hidden md:table-cell">Pays</th>
-              <th className="px-6 py-4 hidden lg:table-cell text-center">Tournois</th>
-              <th className="px-6 py-4 hidden lg:table-cell text-center">Victoires</th>
-              <th className="px-6 py-4 text-right">Points</th>
+              <th className="px-3 sm:px-6 py-4 w-10 sm:w-16">Rang</th>
+              <th className="px-3 sm:px-6 py-4">Joueur</th>
+              <th className="px-3 sm:px-6 py-4 hidden md:table-cell">Pays</th>
+              <th className="px-3 sm:px-6 py-4 hidden lg:table-cell text-center">Tournois</th>
+              <th className="px-3 sm:px-6 py-4 hidden lg:table-cell text-center">Victoires</th>
+              <th className="px-3 sm:px-6 py-4 text-right">Points</th>
             </tr>
           </thead>
           <tbody>
@@ -141,7 +141,7 @@ export default function RankingsPage() {
                   key={r.playerId}
                   className="border-b border-slate-800 last:border-0 hover:bg-slate-800/40 transition-colors"
                 >
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-4">
                     <div
                       className={cn(
                         'inline-flex h-9 w-9 items-center justify-center rounded-full font-black text-sm',
@@ -154,8 +154,8 @@ export default function RankingsPage() {
                       {r.rank <= 3 ? <Trophy className="h-4 w-4" /> : r.rank}
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
+                  <td className="px-3 sm:px-6 py-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <PlayerAvatar player={r} size="md" />
                       <div>
                         <div className="font-bold text-white">{r.tag}</div>
@@ -163,16 +163,16 @@ export default function RankingsPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 hidden md:table-cell text-sm text-slate-300">
+                  <td className="px-3 sm:px-6 py-4 hidden md:table-cell text-sm text-slate-300">
                     {r.country}
                   </td>
-                  <td className="px-6 py-4 hidden lg:table-cell text-center text-slate-300">
+                  <td className="px-3 sm:px-6 py-4 hidden lg:table-cell text-center text-slate-300">
                     {r.tournamentsPlayed}
                   </td>
-                  <td className="px-6 py-4 hidden lg:table-cell text-center font-bold text-yellow-400">
+                  <td className="px-3 sm:px-6 py-4 hidden lg:table-cell text-center font-bold text-yellow-400">
                     {r.wins}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-3 sm:px-6 py-4 text-right">
                     <span className="text-xl font-black text-red-400">
                       {r.points.toLocaleString('fr-FR')}
                     </span>

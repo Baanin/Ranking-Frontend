@@ -121,25 +121,25 @@ export default function TournamentDetailPage() {
           <div className="border-b border-slate-800 bg-slate-900 px-6 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">
             Classement du tournoi
           </div>
-          <table className="w-full min-w-[360px] text-sm">
+          <table className="w-full text-sm">
             <thead className="bg-slate-900/50 text-left text-xs text-slate-500">
               <tr>
-                <th className="px-6 py-3 w-16">#</th>
-                <th className="px-6 py-3">Joueur</th>
-                <th className="px-6 py-3 text-right">Points</th>
+                <th className="px-3 sm:px-6 py-3 w-10 sm:w-16">#</th>
+                <th className="px-3 sm:px-6 py-3">Joueur</th>
+                <th className="px-3 sm:px-6 py-3 text-right">Points</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
               {tournament.entries.map((e) => (
                 <tr key={e.id} className="hover:bg-slate-800/40">
-                  <td className="px-6 py-3 font-mono font-bold text-slate-400">{e.placement}</td>
-                  <td className="px-6 py-3">
-                    <div className="flex items-center gap-3">
+                  <td className="px-3 sm:px-6 py-3 font-mono font-bold text-slate-400">{e.placement}</td>
+                  <td className="px-3 sm:px-6 py-3">
+                    <div className="flex items-center gap-2">
                       <PlayerAvatar player={e.player} size="sm" />
-                      <span className="font-semibold text-white">{e.player.tag}</span>
+                      <span className="font-semibold text-white truncate">{e.player.tag}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-3 text-right font-bold text-red-400">
+                  <td className="px-3 sm:px-6 py-3 text-right font-bold text-red-400">
                     {e.pointsEarned.toLocaleString('fr-FR')}
                   </td>
                 </tr>
