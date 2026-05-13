@@ -29,10 +29,10 @@ export default function Header() {
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-lg font-black uppercase tracking-widest text-white">
-              VS<span className="text-red-500">Ranking</span>
+              GamersGarden<span className="text-red-500"> Rankings</span>
             </span>
             <span className="text-[10px] uppercase tracking-[0.25em] text-slate-400">
-              Fighting Game Association
+              Fighting Game Rankings
             </span>
           </div>
         </NavLink>
