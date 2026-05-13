@@ -23,18 +23,50 @@ const items: NavItem[] = [
 
 export default function AdminLayout() {
   const { hasPermission } = useAuth();
+  const visibleItems = items.filter((it) => !it.requires || hasPermission(it.requires));
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl gap-8 px-6 py-10">
-      <aside className="w-60 shrink-0">
-        <div className="mb-6 flex items-center gap-2 px-3 text-xs font-bold uppercase tracking-widest text-slate-500">
-          <Shield className="h-4 w-4" />
-          Panel Admin
+    <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 py-6 md:py-10">
+      {/* Mobile: horizontal scrollable tab bar */}
+      <div className="md:hidden mb-6 -mx-4 px-4 overflow-x-auto">
+        <div className="flex items-center gap-1 border-b border-slate-800 pb-1 min-w-max">
+          <div className="flex items-center gap-1.5 px-3 mr-2 text-xs font-bold uppercase tracking-widest text-slate-500">
+            <Shield className="h-3.5 w-3.5" />
+            Admin
+          </div>
+          {visibleItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-1.5 rounded-md px-3 py-2 text-xs font-semibold whitespace-nowrap transition',
+                    isActive
+                      ? 'bg-red-950/40 text-red-400'
+                      : 'text-slate-400 hover:bg-slate-800/60 hover:text-white',
+                  )
+                }
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {item.label}
+              </NavLink>
+            );
+          })}
         </div>
-        <nav className="flex flex-col gap-1">
-          {items
-            .filter((it) => !it.requires || hasPermission(it.requires))
-            .map((item) => {
+      </div>
+
+      {/* Desktop: sidebar + content */}
+      <div className="hidden md:flex gap-8">
+        <aside className="w-56 shrink-0">
+          <div className="mb-6 flex items-center gap-2 px-3 text-xs font-bold uppercase tracking-widest text-slate-500">
+            <Shield className="h-4 w-4" />
+            Panel Admin
+          </div>
+          <nav className="flex flex-col gap-1">
+            {visibleItems.map((item) => {
               const Icon = item.icon;
               return (
                 <NavLink
@@ -55,12 +87,18 @@ export default function AdminLayout() {
                 </NavLink>
               );
             })}
-        </nav>
-      </aside>
+          </nav>
+        </aside>
 
-      <main className="flex-1 min-w-0">
+        <main className="flex-1 min-w-0">
+          <Outlet />
+        </main>
+      </div>
+
+      {/* Mobile: content */}
+      <div className="md:hidden">
         <Outlet />
-      </main>
+      </div>
     </div>
   );
 }

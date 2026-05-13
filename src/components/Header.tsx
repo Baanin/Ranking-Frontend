@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Swords, LogIn, LogOut, Shield, User } from 'lucide-react';
+import { Swords, LogIn, LogOut, Shield, User, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { PERMISSIONS } from '@/types/auth';
@@ -14,6 +15,7 @@ const links = [
 export default function Header() {
   const { user, isAuthenticated, logout, hasPermission } = useAuth();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   async function handleLogout() {
     await logout();
@@ -23,21 +25,22 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-red-900/40 bg-slate-950/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <NavLink to="/" className="flex items-center gap-3 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 shadow-lg shadow-red-900/50 group-hover:shadow-red-500/50 transition-shadow">
+        <NavLink to="/" className="flex items-center gap-3 group" onClick={() => setMenuOpen(false)}>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-orange-500 shadow-lg shadow-red-900/50 group-hover:shadow-red-500/50 transition-shadow">
             <Swords className="h-6 w-6 text-white" strokeWidth={2.5} />
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-lg font-black uppercase tracking-widest text-white">
+            <span className="text-base sm:text-lg font-black uppercase tracking-widest text-white">
               GamersGarden<span className="text-red-500"> Rankings</span>
             </span>
-            <span className="text-[10px] uppercase tracking-[0.25em] text-slate-400">
+            <span className="hidden sm:block text-[10px] uppercase tracking-[0.25em] text-slate-400">
               Fighting Game Rankings
             </span>
           </div>
         </NavLink>
 
-        <nav className="flex items-center gap-1">
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-1">
           {links.map((link) => (
             <NavLink
               key={link.to}
@@ -76,7 +79,7 @@ export default function Header() {
           <div className="ml-4 border-l border-slate-800 pl-4">
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <div className="hidden items-center gap-2 text-sm text-slate-300 sm:flex">
+                <div className="hidden items-center gap-2 text-sm text-slate-300 lg:flex">
                   <User className="h-4 w-4 text-slate-500" />
                   <span className="font-semibold">{user?.name}</span>
                 </div>
@@ -100,7 +103,87 @@ export default function Header() {
             )}
           </div>
         </nav>
+
+        {/* Mobile hamburger */}
+        <button
+          type="button"
+          className="md:hidden flex items-center justify-center rounded-md p-2 text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label="Menu"
+        >
+          {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
       </div>
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div className="md:hidden border-t border-slate-800 bg-slate-950 px-4 pb-4 pt-2 space-y-1">
+          {links.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              end={link.end}
+              onClick={() => setMenuOpen(false)}
+              className={({ isActive }) =>
+                cn(
+                  'block px-4 py-3 text-sm font-semibold uppercase tracking-wider rounded-md transition-colors',
+                  isActive
+                    ? 'text-red-400 bg-red-950/40'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/60',
+                )
+              }
+            >
+              {link.label}
+            </NavLink>
+          ))}
+
+          {isAuthenticated && hasPermission(PERMISSIONS.VIEW_ADMIN_PANEL) && (
+            <NavLink
+              to="/admin"
+              onClick={() => setMenuOpen(false)}
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-2 px-4 py-3 text-sm font-semibold uppercase tracking-wider rounded-md transition-colors',
+                  isActive
+                    ? 'bg-red-950/40 text-red-400'
+                    : 'text-slate-300 hover:bg-slate-800/60 hover:text-white',
+                )
+              }
+            >
+              <Shield className="h-4 w-4" />
+              Admin
+            </NavLink>
+          )}
+
+          <div className="pt-3 mt-2 border-t border-slate-800">
+            {isAuthenticated ? (
+              <div className="flex items-center justify-between px-1">
+                <div className="flex items-center gap-2 text-sm text-slate-300">
+                  <User className="h-4 w-4 text-slate-500" />
+                  <span className="font-semibold">{user?.name}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-1.5 rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-300 transition hover:border-red-600/60 hover:text-red-400"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Déco
+                </button>
+              </div>
+            ) : (
+              <NavLink
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-md bg-gradient-to-r from-red-600 to-orange-500 px-4 py-3 text-sm font-bold uppercase tracking-wider text-white transition hover:from-red-500 hover:to-orange-400"
+              >
+                <LogIn className="h-4 w-4" />
+                Connexion
+              </NavLink>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

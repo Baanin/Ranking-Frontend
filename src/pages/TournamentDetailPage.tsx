@@ -48,7 +48,7 @@ export default function TournamentDetailPage() {
         <ArrowLeft className="h-4 w-4" /> Retour aux tournois
       </Link>
 
-      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-8 mb-8">
+      <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-5 md:p-8 mb-8">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-xs uppercase tracking-widest text-red-400 font-bold">
             {tournament.game?.name ?? '—'}
@@ -102,7 +102,7 @@ export default function TournamentDetailPage() {
       </div>
 
       {winner && (
-        <div className="rounded-xl border border-yellow-500/40 bg-gradient-to-br from-yellow-950/40 to-slate-900 p-8 mb-8">
+        <div className="rounded-xl border border-yellow-500/40 bg-gradient-to-br from-yellow-950/40 to-slate-900 p-5 md:p-8 mb-8">
           <div className="text-xs uppercase tracking-widest text-yellow-400 font-bold mb-4">
             🏆 Vainqueur
           </div>
@@ -117,11 +117,11 @@ export default function TournamentDetailPage() {
       )}
 
       {tournament.entries && tournament.entries.length > 0 && (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/50 overflow-hidden">
+        <div className="rounded-xl border border-slate-800 bg-slate-900/50 overflow-x-auto">
           <div className="border-b border-slate-800 bg-slate-900 px-6 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">
             Classement du tournoi
           </div>
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[360px] text-sm">
             <thead className="bg-slate-900/50 text-left text-xs text-slate-500">
               <tr>
                 <th className="px-6 py-3 w-16">#</th>

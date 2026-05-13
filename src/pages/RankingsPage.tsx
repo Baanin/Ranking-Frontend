@@ -110,8 +110,8 @@ export default function RankingsPage() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/50">
-        <table className="w-full">
+      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/50">
+        <table className="w-full min-w-[480px]">
           <thead className="bg-slate-900 border-b border-slate-800">
             <tr className="text-left text-xs uppercase tracking-wider text-slate-400">
               <th className="px-6 py-4 w-16">Rang</th>

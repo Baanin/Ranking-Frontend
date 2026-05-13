@@ -46,7 +46,7 @@ export default function TournamentsPage() {
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 mb-8">
+      <div className="flex flex-wrap items-center gap-3 mb-8 justify-between sm:justify-start">
         {statusFilters.map((f) => (
           <button
             key={f.value}
@@ -61,7 +61,7 @@ export default function TournamentsPage() {
             {f.label}
           </button>
         ))}
-        <div className="ml-auto">
+        <div className="sm:ml-auto">
           <select
             value={gameId}
             onChange={(e) => setGameId(e.target.value)}
