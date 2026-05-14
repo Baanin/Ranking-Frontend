@@ -22,13 +22,13 @@ export default function TournamentCard({ tournament }: { tournament: Tournament 
   return (
     <Link
       to={`/tournaments/${tournament.id}`}
-      className="group block rounded-xl border border-slate-800 bg-slate-900/50 p-5 hover:border-red-500/50 hover:bg-slate-900 transition-all"
+      className="group block border border-zinc-800 bg-zinc-900 p-5 hover:border-red-600/60 hover:bg-zinc-900/80 transition-all clip-corner border-accent"
     >
       <div className="flex items-start justify-between gap-2 mb-3">
-        <span className="text-xs uppercase tracking-widest text-red-400 font-bold">{gameName}</span>
+        <span className="font-condensed text-xs uppercase tracking-[0.2em] text-red-400 font-bold">{gameName}</span>
         <span
           className={cn(
-            'text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded border',
+            'font-condensed text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 border',
             statusStyles[tournament.status],
           )}
         >
@@ -36,13 +36,13 @@ export default function TournamentCard({ tournament }: { tournament: Tournament 
         </span>
       </div>
 
-      <h3 className="text-lg font-bold text-white group-hover:text-red-400 transition-colors mb-3">
+      <h3 className="font-condensed text-lg font-bold uppercase tracking-wide text-white group-hover:text-red-400 transition-colors mb-4 leading-tight">
         {tournament.name}
       </h3>
 
-      <div className="space-y-2 text-sm text-slate-400">
+      <div className="space-y-1.5 font-condensed text-sm text-zinc-500">
         <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-slate-500" />
+          <Calendar className="h-3.5 w-3.5 text-zinc-600 shrink-0" />
           {new Date(tournament.date).toLocaleDateString('fr-FR', {
             day: 'numeric',
             month: 'long',
@@ -50,16 +50,16 @@ export default function TournamentCard({ tournament }: { tournament: Tournament 
           })}
         </div>
         <div className="flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-slate-500" />
+          <MapPin className="h-3.5 w-3.5 text-zinc-600 shrink-0" />
           {tournament.location}
         </div>
         <div className="flex items-center gap-2">
-          <Users className="h-4 w-4 text-slate-500" />
+          <Users className="h-3.5 w-3.5 text-zinc-600 shrink-0" />
           {count} participants
         </div>
         {tournament.prizePool && (
-          <div className="flex items-center gap-2 text-yellow-400 font-semibold">
-            <Trophy className="h-4 w-4" />
+          <div className="flex items-center gap-2 text-amber-400 font-bold">
+            <Trophy className="h-3.5 w-3.5 shrink-0" />
             {tournament.prizePool}
           </div>
         )}
