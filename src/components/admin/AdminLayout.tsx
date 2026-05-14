@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, Shield, ScrollText, Trophy, Gamepad2, CalendarDays } from 'lucide-react';
+import { LayoutDashboard, Users, Shield, ScrollText, Trophy, Gamepad2, CalendarDays, SlidersHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { PERMISSIONS, type Permission } from '@/types/auth';
@@ -19,6 +19,7 @@ const items: NavItem[] = [
   { to: '/admin/seasons', label: 'Saisons', icon: CalendarDays, requires: PERMISSIONS.MANAGE_TOURNAMENTS },
   { to: '/admin/users', label: 'Administrateurs', icon: Users, requires: PERMISSIONS.MANAGE_USERS },
   { to: '/admin/audit', label: "Journal d'audit", icon: ScrollText, requires: PERMISSIONS.VIEW_AUDIT_LOGS },
+  { to: '/admin/scoring', label: 'Barème', icon: SlidersHorizontal, requires: PERMISSIONS.MANAGE_TOURNAMENTS },
 ];
 
 export default function AdminLayout() {

@@ -14,6 +14,7 @@ import AdminAuditLogsPage from './pages/admin/AdminAuditLogsPage';
 import AdminTournamentsPage from './pages/admin/AdminTournamentsPage';
 import AdminGamesPage from './pages/admin/AdminGamesPage';
 import AdminSeasonsPage from './pages/admin/AdminSeasonsPage';
+import AdminScoringPage from './pages/admin/AdminScoringPage';
 import { PERMISSIONS } from './types/auth';
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
               <Route path="tournaments" element={<AdminTournamentsPage />} />
               <Route path="games" element={<AdminGamesPage />} />
               <Route path="seasons" element={<AdminSeasonsPage />} />
+              <Route path="scoring" element={<AdminScoringPage />} />
             </Route>
           </Route>
         </Route>
