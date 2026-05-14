@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Trophy, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import PlayerAvatar from '@/components/PlayerAvatar';
 import { cn } from '@/lib/utils';
 import { listGames } from '@/services/gamesService';
@@ -96,162 +96,194 @@ export default function RankingsPage() {
   const currentGame = games.find((g) => g.id === gameId);
   const currentSeason = seasons.find((s) => s.id === seasonId);
 
+  const rankStyle = (rank: number) => {
+    if (rank === 1) return { row: 'border-l-4 border-l-amber-400 bg-amber-950/10', num: 'text-amber-400', badge: 'bg-amber-400 text-black' };
+    if (rank === 2) return { row: 'border-l-4 border-l-zinc-300 bg-zinc-800/10', num: 'text-zinc-300', badge: 'bg-zinc-300 text-black' };
+    if (rank === 3) return { row: 'border-l-4 border-l-orange-500 bg-orange-950/10', num: 'text-orange-400', badge: 'bg-orange-500 text-white' };
+    return { row: 'border-l-4 border-l-transparent hover:border-l-red-600 hover:bg-zinc-900/60', num: 'text-zinc-600', badge: 'bg-zinc-800 text-zinc-400' };
+  };
+
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12" onMouseLeave={handleRowLeave}>
-      <div className="mb-10">
-        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight text-white">
-          Classement <span className="text-red-500">général</span>
-        </h1>
-        <p className="text-slate-400 mt-2">
-          {currentGame?.name}
-          {currentSeason && ` · ${currentSeason.name}`}
-        </p>
-      </div>
-
-      {/* Filters */}
-      <div className="mb-6 flex flex-wrap gap-3">
-        <select
-          value={gameId}
-          onChange={(e) => setGameId(e.target.value)}
-          className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white"
-        >
-          {games.map((g) => (
-            <option key={g.id} value={g.id}>
-              {g.name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={seasonId}
-          onChange={(e) => setSeasonId(e.target.value)}
-          className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white"
-        >
-          <option value="">Toutes les saisons</option>
-          {filteredSeasons.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {error && (
-        <div className="mb-4 flex items-start gap-3 rounded-lg border border-red-900/60 bg-red-950/40 p-3 text-sm text-red-300">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>{error}</span>
+    <div onMouseLeave={handleRowLeave}>
+      {/* Page header */}
+      <div className="border-b border-zinc-800 bg-zinc-950">
+        <div className="mx-auto max-w-7xl px-6 pt-10 pb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-[2px] w-8 bg-red-600" />
+            <span className="font-condensed text-xs uppercase tracking-[0.3em] text-red-500">
+              {currentGame?.name ?? 'Tous les jeux'}
+            </span>
+          </div>
+          <h1 className="font-fighting text-5xl md:text-7xl text-white tracking-wider leading-none">
+            Classement <span className="text-red-500">général</span>
+          </h1>
+          {currentSeason && (
+            <p className="font-condensed text-xs uppercase tracking-[0.25em] text-zinc-600 mt-2">
+              {currentSeason.name}
+            </p>
+          )}
         </div>
-      )}
 
-      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/50">
-        <table className="w-full">
-          <thead className="bg-slate-900 border-b border-slate-800">
-            <tr className="text-left text-xs uppercase tracking-wider text-slate-400">
-              <th className="px-3 sm:px-6 py-4 w-10 sm:w-16">Rang</th>
-              <th className="px-3 sm:px-6 py-4">Joueur</th>
-              <th className="px-3 sm:px-6 py-4 hidden md:table-cell">Pays</th>
-              <th className="px-3 sm:px-6 py-4 hidden lg:table-cell text-center">Tournois</th>
-              <th className="px-3 sm:px-6 py-4 hidden lg:table-cell text-center">Victoires</th>
-              <th className="px-3 sm:px-6 py-4 text-right">Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="py-14 text-center text-slate-500">
-                  Chargement...
-                </td>
+        {/* Filter tabs */}
+        <div className="mx-auto max-w-7xl px-6 pb-0 flex flex-wrap items-end gap-2">
+          {games.map((g) => (
+            <button
+              key={g.id}
+              onClick={() => setGameId(g.id)}
+              className={cn(
+                'font-condensed text-xs font-bold uppercase tracking-[0.15em] px-5 py-2.5 border-t border-x transition-colors',
+                gameId === g.id
+                  ? 'bg-[#0a0a0a] border-zinc-700 text-white border-b-[#0a0a0a]'
+                  : 'bg-zinc-900 border-transparent text-zinc-500 hover:text-zinc-200',
+              )}
+            >
+              {g.name}
+            </button>
+          ))}
+          <div className="ml-auto pb-px">
+            <select
+              value={seasonId}
+              onChange={(e) => setSeasonId(e.target.value)}
+              className="font-condensed text-xs uppercase tracking-[0.1em] border border-zinc-700 bg-zinc-900 text-zinc-300 px-3 py-2 focus:outline-none focus:border-red-600"
+            >
+              <option value="">Toutes les saisons</option>
+              {filteredSeasons.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-6 py-8">
+        {error && (
+          <div className="mb-6 flex items-start gap-3 border-l-4 border-red-600 bg-red-950/30 px-4 py-3 text-sm font-condensed text-red-300">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <div className="overflow-x-auto border border-zinc-800">
+          <table className="w-full">
+            <thead className="bg-zinc-950 border-b-2 border-zinc-800">
+              <tr className="text-left">
+                <th className="px-4 py-3 w-14">
+                  <span className="font-condensed text-[10px] uppercase tracking-[0.2em] text-zinc-600">Rang</span>
+                </th>
+                <th className="px-4 py-3">
+                  <span className="font-condensed text-[10px] uppercase tracking-[0.2em] text-zinc-600">Joueur</span>
+                </th>
+                <th className="px-4 py-3 hidden md:table-cell">
+                  <span className="font-condensed text-[10px] uppercase tracking-[0.2em] text-zinc-600">Pays</span>
+                </th>
+                <th className="px-4 py-3 hidden lg:table-cell text-center">
+                  <span className="font-condensed text-[10px] uppercase tracking-[0.2em] text-zinc-600">Tournois</span>
+                </th>
+                <th className="px-4 py-3 hidden lg:table-cell text-center">
+                  <span className="font-condensed text-[10px] uppercase tracking-[0.2em] text-zinc-600">Victoires</span>
+                </th>
+                <th className="px-4 py-3 text-right">
+                  <span className="font-condensed text-[10px] uppercase tracking-[0.2em] text-zinc-600">Points</span>
+                </th>
               </tr>
-            ) : rows.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="py-14 text-center text-slate-500">
-                  Aucun joueur classé pour ce filtre
-                </td>
-              </tr>
-            ) : (
-              rows.map((r) => (
-                <tr
-                  key={r.playerId}
-                  className="border-b border-slate-800 last:border-0 hover:bg-slate-800/40 transition-colors cursor-pointer"
-                  onMouseEnter={(e) => handleRowEnter(r.playerId, e)}
-                  onMouseLeave={handleRowLeave}
-                >
-                  <td className="px-3 sm:px-6 py-4">
-                    <div
-                      className={cn(
-                        'inline-flex h-9 w-9 items-center justify-center rounded-full font-black text-sm',
-                        r.rank === 1 && 'bg-yellow-500 text-slate-900',
-                        r.rank === 2 && 'bg-slate-300 text-slate-900',
-                        r.rank === 3 && 'bg-orange-600 text-white',
-                        r.rank > 3 && 'bg-slate-800 text-slate-300',
-                      )}
-                    >
-                      {r.rank <= 3 ? <Trophy className="h-4 w-4" /> : r.rank}
-                    </div>
-                  </td>
-                  <td className="px-3 sm:px-6 py-4">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <PlayerAvatar player={r} size="md" />
-                      <div>
-                        <div className="font-bold text-white">{r.tag}</div>
-                        {r.name && <div className="text-xs text-slate-400">{r.name}</div>}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-3 sm:px-6 py-4 hidden md:table-cell text-sm text-slate-300">
-                    {r.country}
-                  </td>
-                  <td className="px-3 sm:px-6 py-4 hidden lg:table-cell text-center text-slate-300">
-                    {r.tournamentsPlayed}
-                  </td>
-                  <td className="px-3 sm:px-6 py-4 hidden lg:table-cell text-center font-bold text-yellow-400">
-                    {r.wins}
-                  </td>
-                  <td className="px-3 sm:px-6 py-4 text-right">
-                    <span className="text-xl font-black text-red-400">
-                      {r.points.toLocaleString('fr-FR')}
-                    </span>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="py-16 text-center font-condensed uppercase tracking-widest text-zinc-700 text-sm">
+                    Chargement...
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : rows.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-16 text-center font-condensed uppercase tracking-widest text-zinc-700 text-sm">
+                    Aucun joueur classé
+                  </td>
+                </tr>
+              ) : (
+                rows.map((r) => {
+                  const rs = rankStyle(r.rank);
+                  return (
+                    <tr
+                      key={r.playerId}
+                      className={cn('border-b border-zinc-900 last:border-0 transition-all cursor-pointer', rs.row)}
+                      onMouseEnter={(e) => handleRowEnter(r.playerId, e)}
+                      onMouseLeave={handleRowLeave}
+                    >
+                      <td className="px-4 py-4">
+                        <span className={cn('font-fighting text-2xl leading-none', rs.num)}>
+                          {r.rank}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          <PlayerAvatar player={r} size="md" />
+                          <div>
+                            <div className="font-condensed font-bold text-base uppercase tracking-wide text-white">{r.tag}</div>
+                            {r.name && <div className="font-condensed text-xs text-zinc-500 uppercase tracking-wider">{r.name}</div>}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 hidden md:table-cell font-condensed text-sm uppercase tracking-wider text-zinc-500">
+                        {r.country}
+                      </td>
+                      <td className="px-4 py-4 hidden lg:table-cell text-center font-condensed text-sm text-zinc-500">
+                        {r.tournamentsPlayed}
+                      </td>
+                      <td className="px-4 py-4 hidden lg:table-cell text-center">
+                        <span className="font-fighting text-xl text-amber-400">{r.wins}</span>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <span className="font-fighting text-2xl text-red-500 neon-text">
+                          {r.points.toLocaleString('fr-FR')}
+                        </span>
+                        <span className="font-condensed text-[9px] uppercase tracking-widest text-zinc-700 ml-1">pts</span>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Hover tooltip */}
       {hoveredPlayerId && hoverPos && (
         <div
-          className="fixed z-50 w-72 rounded-xl border border-slate-700 bg-slate-900 shadow-2xl shadow-black/50 p-3"
+          className="fixed z-50 w-72 border border-zinc-700 border-l-2 border-l-red-600 bg-zinc-950 shadow-2xl shadow-black p-3"
           style={{ top: hoverPos.top, right: hoverPos.right }}
           onMouseEnter={() => { if (hoverTimeout.current) clearTimeout(hoverTimeout.current); }}
           onMouseLeave={handleRowLeave}
         >
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Résultats en tournoi</p>
+          <p className="font-condensed text-[10px] font-bold uppercase tracking-[0.25em] text-red-500 mb-3">
+            Résultats en tournoi
+          </p>
           {hoverResults === null ? (
-            <p className="text-sm text-slate-500 py-2 text-center">Chargement...</p>
+            <p className="font-condensed text-sm text-zinc-600 py-2 text-center uppercase tracking-wider">Chargement...</p>
           ) : hoverResults.length === 0 ? (
-            <p className="text-sm text-slate-500 py-2 text-center">Aucun résultat</p>
+            <p className="font-condensed text-sm text-zinc-600 py-2 text-center uppercase tracking-wider">Aucun résultat</p>
           ) : (
-            <ul className="space-y-1.5">
+            <ul className="space-y-2">
               {hoverResults.map((res) => (
-                <li key={res.tournamentId} className="flex items-center gap-2">
+                <li key={res.tournamentId} className="flex items-center gap-2.5 border-b border-zinc-900 pb-2 last:border-0 last:pb-0">
                   <span
                     className={cn(
-                      'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-black',
-                      res.placement === 1 && 'bg-yellow-500 text-slate-900',
-                      res.placement === 2 && 'bg-slate-300 text-slate-900',
-                      res.placement === 3 && 'bg-orange-600 text-white',
-                      res.placement > 3 && 'bg-slate-800 text-slate-300',
+                      'font-fighting text-lg leading-none w-7 text-center shrink-0',
+                      res.placement === 1 && 'text-amber-400',
+                      res.placement === 2 && 'text-zinc-300',
+                      res.placement === 3 && 'text-orange-500',
+                      res.placement > 3 && 'text-zinc-600',
                     )}
                   >
                     {res.placement}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-medium text-white">{res.tournamentName}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="font-condensed truncate text-xs font-bold uppercase tracking-wide text-white">{res.tournamentName}</p>
+                    <p className="font-condensed text-[10px] text-zinc-600 uppercase tracking-wider">
                       {new Date(res.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
                       {' · '}
-                      <span className="text-red-400 font-bold">{res.points} pts</span>
+                      <span className="text-red-500 font-bold">{res.points} pts</span>
                     </p>
                   </div>
                 </li>
