@@ -70,7 +70,7 @@ export default function RankingsPage() {
           Classement <span className="text-red-500">général</span>
         </h1>
         <p className="text-slate-400 mt-2">
-          {currentGame ? currentGame.name : 'Tous les jeux'}
+          {currentGame?.name}
           {currentSeason && ` · ${currentSeason.name}`}
         </p>
       </div>
@@ -82,7 +82,6 @@ export default function RankingsPage() {
           onChange={(e) => setGameId(e.target.value)}
           className="rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white"
         >
-          <option value="">Tous les jeux</option>
           {games.map((g) => (
             <option key={g.id} value={g.id}>
               {g.name}
