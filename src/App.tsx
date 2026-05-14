@@ -15,6 +15,7 @@ import AdminTournamentsPage from './pages/admin/AdminTournamentsPage';
 import AdminGamesPage from './pages/admin/AdminGamesPage';
 import AdminSeasonsPage from './pages/admin/AdminSeasonsPage';
 import AdminScoringPage from './pages/admin/AdminScoringPage';
+import AdminPlayersPage from './pages/admin/AdminPlayersPage';
 import { PERMISSIONS } from './types/auth';
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
               <Route path="games" element={<AdminGamesPage />} />
               <Route path="seasons" element={<AdminSeasonsPage />} />
               <Route path="scoring" element={<AdminScoringPage />} />
+              <Route path="players" element={<AdminPlayersPage />} />
             </Route>
           </Route>
         </Route>

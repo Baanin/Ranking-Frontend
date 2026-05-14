@@ -60,6 +60,7 @@ export interface Player {
   avatarColor: string;
   startggUserId: number | null;
   startggSlug: string | null;
+  mergedIntoId: string | null;
   createdAt: string;
   updatedAt: string;
   participations?: Array<Participation & { tournament: Tournament }>;
