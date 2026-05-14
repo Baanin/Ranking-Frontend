@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trophy, AlertTriangle } from 'lucide-react';
 import PlayerAvatar from '@/components/PlayerAvatar';
 import { cn } from '@/lib/utils';
 import { listGames } from '@/services/gamesService';
 import { listSeasons } from '@/services/seasonsService';
 import { listRankings } from '@/services/rankingsService';
+import { getPlayerResults, type PlayerResult } from '@/services/playersService';
 import type { Game, Season, RankingEntry } from '@/types/domain';
 import { ApiError } from '@/lib/apiClient';
 
@@ -17,6 +18,12 @@ export default function RankingsPage() {
 
   const [gameId, setGameId] = useState('');
   const [seasonId, setSeasonId] = useState('');
+
+  const [hoveredPlayerId, setHoveredPlayerId] = useState<string | null>(null);
+  const [hoverResults, setHoverResults] = useState<PlayerResult[] | null>(null);
+  const [hoverPos, setHoverPos] = useState<{ top: number; right: number } | null>(null);
+  const hoverCache = useRef<Record<string, PlayerResult[]>>({});
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load refs
   useEffect(() => {
@@ -60,11 +67,37 @@ export default function RankingsPage() {
     [gameId, seasons],
   );
 
+  function handleRowEnter(playerId: string, e: { currentTarget: HTMLTableRowElement }) {
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    const rect = e.currentTarget.getBoundingClientRect();
+    setHoverPos({ top: rect.top, right: window.innerWidth - rect.right + 8 });
+    setHoveredPlayerId(playerId);
+    if (hoverCache.current[playerId]) {
+      setHoverResults(hoverCache.current[playerId]);
+    } else {
+      setHoverResults(null);
+      getPlayerResults(playerId, { gameId: gameId || undefined, seasonId: seasonId || undefined })
+        .then((res) => {
+          hoverCache.current[playerId] = res;
+          setHoverResults(res);
+        })
+        .catch(() => setHoverResults([]));
+    }
+  }
+
+  function handleRowLeave() {
+    hoverTimeout.current = setTimeout(() => {
+      setHoveredPlayerId(null);
+      setHoverResults(null);
+      setHoverPos(null);
+    }, 150);
+  }
+
   const currentGame = games.find((g) => g.id === gameId);
   const currentSeason = seasons.find((s) => s.id === seasonId);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12">
+    <div className="mx-auto max-w-7xl px-6 py-12" onMouseLeave={handleRowLeave}>
       <div className="mb-10">
         <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight text-white">
           Classement <span className="text-red-500">général</span>
@@ -138,7 +171,9 @@ export default function RankingsPage() {
               rows.map((r) => (
                 <tr
                   key={r.playerId}
-                  className="border-b border-slate-800 last:border-0 hover:bg-slate-800/40 transition-colors"
+                  className="border-b border-slate-800 last:border-0 hover:bg-slate-800/40 transition-colors cursor-pointer"
+                  onMouseEnter={(e) => handleRowEnter(r.playerId, e)}
+                  onMouseLeave={handleRowLeave}
                 >
                   <td className="px-3 sm:px-6 py-4">
                     <div
@@ -182,6 +217,49 @@ export default function RankingsPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Hover tooltip */}
+      {hoveredPlayerId && hoverPos && (
+        <div
+          className="fixed z-50 w-72 rounded-xl border border-slate-700 bg-slate-900 shadow-2xl shadow-black/50 p-3"
+          style={{ top: hoverPos.top, right: hoverPos.right }}
+          onMouseEnter={() => { if (hoverTimeout.current) clearTimeout(hoverTimeout.current); }}
+          onMouseLeave={handleRowLeave}
+        >
+          <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Résultats en tournoi</p>
+          {hoverResults === null ? (
+            <p className="text-sm text-slate-500 py-2 text-center">Chargement...</p>
+          ) : hoverResults.length === 0 ? (
+            <p className="text-sm text-slate-500 py-2 text-center">Aucun résultat</p>
+          ) : (
+            <ul className="space-y-1.5">
+              {hoverResults.map((res) => (
+                <li key={res.tournamentId} className="flex items-center gap-2">
+                  <span
+                    className={cn(
+                      'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-black',
+                      res.placement === 1 && 'bg-yellow-500 text-slate-900',
+                      res.placement === 2 && 'bg-slate-300 text-slate-900',
+                      res.placement === 3 && 'bg-orange-600 text-white',
+                      res.placement > 3 && 'bg-slate-800 text-slate-300',
+                    )}
+                  >
+                    {res.placement}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-medium text-white">{res.tournamentName}</p>
+                    <p className="text-xs text-slate-500">
+                      {new Date(res.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      {' · '}
+                      <span className="text-red-400 font-bold">{res.points} pts</span>
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   );
 }

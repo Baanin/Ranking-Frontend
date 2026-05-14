@@ -20,3 +20,23 @@ export function updatePlayer(
 export function deletePlayer(id: string): Promise<void> {
   return apiFetch<void>(`/players/${id}`, { method: 'DELETE' });
 }
+
+export interface PlayerResult {
+  tournamentId: string;
+  tournamentName: string;
+  date: string;
+  placement: number;
+  points: number;
+  numEntrants: number;
+}
+
+export function getPlayerResults(
+  id: string,
+  params: { gameId?: string; seasonId?: string } = {},
+): Promise<PlayerResult[]> {
+  const qs = new URLSearchParams();
+  if (params.gameId) qs.set('gameId', params.gameId);
+  if (params.seasonId) qs.set('seasonId', params.seasonId);
+  const query = qs.toString();
+  return apiFetch<PlayerResult[]>(`/players/${id}/results${query ? `?${query}` : ''}`);
+}
